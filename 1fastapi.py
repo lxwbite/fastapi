@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Request
+
 
 # web服务器
 import uvicorn
@@ -33,3 +34,14 @@ async def put_test():
 async def delete_test():
     return {"method": "delete method"}
 
+@app.get("/get_test")
+async def get_test(request: Request):
+    get_test = request.query_params
+    print(get_test)
+    return {"method": "get_test"}
+
+@app.post("/post_test")
+async def post_test(request: Request):
+    post_test = await request.json()
+    print(post_test)
+    return {"method": "post_test"}
