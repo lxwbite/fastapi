@@ -1,8 +1,12 @@
 # 导入FastAPI静态文件挂载模块，用于托管图片、css、js等静态资源
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from tortoise.contrib.fastapi import register_tortoise
+from settings import TORTOISE_ORM
 # 导入FastAPI核心实例、Request请求对象（用于接收请求参数）
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # 导入uvicorn ASGI异步web服务器，用来运行FastAPI项目
 import uvicorn
@@ -12,8 +16,24 @@ from api.book import api_book
 from api.cbs import api_cbs
 from api.zz import api_zz
 
+
+
 # 实例化FastAPI应用程序核心对象
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    # allow_origins=origins,  # *: 代表所有客户端
+    allow_origins=["*"],  # *: 代表所有客户端
+    allow_credentials=True,
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
+
+register_tortoise(
+    app=app,
+    config=TORTOISE_ORM,
+)
 
 # 挂载静态资源目录
 # path：浏览器访问URL前缀；directory：本地存放静态文件的文件夹；name：内部标识名
@@ -86,5 +106,4 @@ async def jinjia2templates(request: Request):
             "books": ["平凡的世界","活着","兄弟","围城"]
         }
     )
-
 
