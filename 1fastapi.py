@@ -1,5 +1,6 @@
 # 导入FastAPI静态文件挂载模块，用于托管图片、css、js等静态资源
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 # 导入FastAPI核心实例、Request请求对象（用于接收请求参数）
 from fastapi import FastAPI, Request
 
@@ -18,6 +19,8 @@ app = FastAPI()
 # path：浏览器访问URL前缀；directory：本地存放静态文件的文件夹；name：内部标识名
 # 访问示例：http://127.0.0.1:8000/upimg/img.png 即可直接读取upimg文件夹下的img.png图片
 app.mount("/upimg", StaticFiles(directory="upimg"), name="upimg")
+
+templates = Jinja2Templates(directory="templates")
 
 # 批量注册拆分后的子路由，统一添加接口前缀和接口分类标签（用于自动接口文档分组）
 # prefix：给当前分组所有接口统一拼接URL前缀；tags：接口文档里的分组名称
@@ -72,5 +75,16 @@ async def post_test(request: Request):
     post_test = await request.json()
     print(post_test)  # 控制台打印前端传递的json请求体内容
     return {"method": "post_test"}
+
+@app.get("/jinjia2templates")
+async def jinjia2templates(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "request": request,
+            "books": ["平凡的世界","活着","兄弟","围城"]
+        }
+    )
 
 
